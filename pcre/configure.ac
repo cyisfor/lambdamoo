@@ -22,6 +22,7 @@ AC_CONFIG_SRCDIR([pcre.h.in])
 AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
 AC_CONFIG_HEADERS(config.h)
 
+
 # The default CFLAGS and CXXFLAGS in Autoconf are "-g -O2" for gcc and just
 # "-g" for any other compiler. There doesn't seem to be a standard way of
 # getting rid of the -g (which I don't think is needed for a production
@@ -63,7 +64,7 @@ fi
 # AC_PROG_CXX will return "g++" even if no c++ compiler is installed.
 # Check for that case, and just disable c++ code if g++ doesn't run.
 AC_LANG_PUSH(C++)
-AC_COMPILE_IFELSE(AC_LANG_PROGRAM([],[]),, CXX=""; CXXCP=""; CXXFLAGS="")
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],[])],, CXX=""; CXXCP=""; CXXFLAGS="")
 AC_LANG_POP
 
 AC_PROG_INSTALL
@@ -301,11 +302,11 @@ for flag in "-alias,__ZN7pcrecpp2RE6no_argE,__ZN7pcrecpp6no_argE" \
   LDFLAGS="$OLD_LDFLAGS -Wl,$flag"
   # We try to run the linker with this new ld flag.  If the link fails,
   # we give up and remove the new flag from LDFLAGS.
-  AC_LINK_IFELSE(AC_LANG_PROGRAM([namespace pcrecpp {
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([namespace pcrecpp {
                                     class RE { static int no_arg; };
                                     int RE::no_arg;
                                   }],
-                                 []),
+                                 [])],
                  [AC_MSG_RESULT([yes]);
                   EXTRA_LIBPCRECPP_LDFLAGS="$EXTRA_LIBPCRECPP_LDFLAGS -Wl,$flag";
                   break;],

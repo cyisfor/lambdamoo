@@ -21,6 +21,10 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include <stdio.h>
 #include "stderr.h"
+#include <stdarg.h>
+#include <errno.h>
+#include <alloca.h>
+#include <stdlib.h>
 
 /* Holds the name of the currently active program. */
 static char *program_name;
@@ -46,20 +50,19 @@ set_program_name (prog_name)
    '%': print out a single percent sign, '%' */
 
 void 
-report_error (va_alist) 
-     va_dcl
+report_error (const char* format, ...)
 {
-  extern int errno, sys_nerr;
-  extern char *sys_errlist[];
+  /*  extern int errno, sys_nerr;
+      extern char *sys_errlist[];
+      These break everything. */
   typedef void (*PTF)();
 	typedef char *CHARP;
   va_list argp;
   int     abort = 0;
-  char   *format;
 
-  va_start (argp);
+  va_start (argp,format);
 
-  for (format = va_arg (argp, char *); *format; format++) 
+  for (; *format; format++) 
     {
       if (*format != '%') 
         putc (*format, stderr);

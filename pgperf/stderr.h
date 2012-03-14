@@ -22,8 +22,7 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifndef _stderr_h
 #define _stderr_h
 #include "prototype.h"
-#include <varargs.h>
 
 extern void set_program_name P ((char *prog_name));
-extern void report_error ();
+extern void report_error (const char* format, ...);
 #endif /* _stderr_h */
