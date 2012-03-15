@@ -29,6 +29,7 @@
 #include "structures.h"
 #include "unparse.h"
 #include "utils.h"
+#include "chr.h"
 
 /*****************************************************************************
  * This is the table of procedures that register MOO built-in functions.  To
@@ -54,7 +55,8 @@ static registry bi_function_registries[] =
     register_property,
     register_server,
     register_tasks,
-    register_verbs
+    register_verbs,
+    register_chr
 };
 
 void
