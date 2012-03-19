@@ -39,6 +39,9 @@
 #undef _XOPEN_SOURCE
 #undef _GNU_SOURCE
 
+// ssh fingerprint authentication
+#undef SSH_FINGERPRINT
+
 /* The following symbols describe whether or not certain functions are declared
  * in header files on your system and, if so, where.  If, on your system, the
  * functions `memcmp', `memcpy', etc. are not declared in <string.h>, but are

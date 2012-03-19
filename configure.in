@@ -18,6 +18,11 @@ dnl
 AC_INIT(Makefile.in)
 AC_CONFIG_HEADER(config.h)
 
+AC_ARG_WITH(ssh-fingerprints, 
+            "Enable SSH to send a fingerprint ID", 
+            AC_DEFINE(SSH_FINGERPRINT), [])
+
+
 dnl ***************************************************************************
 dnl	MOO_AUX
 dnl Defines _POSIX_SOURCE if this machine is running A/UX; this appears to be

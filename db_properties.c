@@ -133,17 +133,25 @@ db_add_propdef(Objid oid, const char *pname, Var value, Objid owner,
 
     o = dbpriv_find_object(oid);
     if (o->propdefs.cur_length == o->propdefs.max_length) {
-	Propdef *old_props = o->propdefs.l;
+      /* Not needed because realloc
+         Propdef *old_props = o->propdefs.l; */
 	int new_size = (o->propdefs.max_length == 0
 			? 8 : 2 * o->propdefs.max_length);
 
-	o->propdefs.l = mymalloc(new_size * sizeof(Propdef), M_PROPDEF);
+	o->propdefs.l = myremalloc(o->propdefs.l,
+                                   new_size * sizeof(Propdef), 
+                                   M_PROPDEF);
+        /*
+          This is not needed because realloc
 	for (i = 0; i < o->propdefs.max_length; i++)
 	    o->propdefs.l[i] = old_props[i];
+        */
 	o->propdefs.max_length = new_size;
 
-	if (old_props)
+	/* Not needed because realloc
+           if (old_props)
 	    myfree(old_props, M_PROPDEF);
+        */
     }
     o->propdefs.l[o->propdefs.cur_length++] = dbpriv_new_propdef(pname);
 

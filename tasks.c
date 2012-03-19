@@ -122,6 +122,9 @@ typedef struct tqueue {
      * If an unconnected queue becomes empty, it is destroyed.
      */
     struct tqueue *next, **prev;	/* prev only valid on idle_tqueues */
+#ifdef SSH_FINGERPRINT
+  char* fingerprint;
+#endif
     Objid player;
     Objid handler;
     int connected;
@@ -338,6 +341,9 @@ find_tqueue(Objid player, int create_if_not_found)
     tq->player = player;
     tq->handler = 0;
     tq->connected = 0;
+#ifdef SSH_FINGERPRINT
+    tq->fingerprint = NULL;
+#endif
 
     tq->first_input = tq->first_itail = tq->first_bg = 0;
     tq->last_input = &(tq->first_input);
@@ -374,6 +380,11 @@ free_tqueue(tqueue * tq)
 	free_stream(tq->program_stream);
     if (tq->reading)
 	free_vm(tq->reading_vm, 1);
+#ifdef SSH_FINGERPRINT
+    if (tq->fingerprint)
+      // this isn't reference counted...
+      myfree(tq->fingerprint,M_STRING);
+#endif
 
     *(tq->prev) = tq->next;
     if (tq->next)
@@ -731,6 +742,17 @@ do_login_task(tqueue * tq, char *command)
 {
     Var result;
     Var args;
+
+#ifdef SSH_FINGERPRINT
+  if (NULL==tq->fingerprint && *command != '\0') {
+    /* First thing ever sent is the SSH fingerprint */
+    printf("*** ifingerprint %s\n",command);
+    tq->fingerprint = str_dup(command);
+    return 1;
+  } 
+#endif 
+
+
     Objid old_max_object = db_last_used_objid();
 
     result.type = TYPE_INT;	/* In case #0:do_login_command does not exist
@@ -770,6 +792,17 @@ do_login_task(tqueue * tq, char *command)
 	    dead_tq->player = NOTHING;	/* it'll be freed by run_ready_tasks */
 	    dead_tq->num_bg_tasks = 0;
 	}
+#ifdef SSH_FINGERPRINT
+        db_prop_handle prop = db_find_property(new_player,"fingerprint",0);
+        if(prop.ptr!=NULL) {
+          Var value;
+          value.type = TYPE_STR;
+          /* no need to add a reference here, since tq never frees fingerprint
+             and the value gets copied into the db anyway. */        
+          value.v.str = tq->fingerprint;
+          db_set_property_value(prop,value);
+        }
+#endif
 	player_connected(old_player, new_player, new_player > old_max_object);
     }
     free_var(result);
