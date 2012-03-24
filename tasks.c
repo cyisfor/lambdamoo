@@ -760,6 +760,16 @@ do_login_task(tqueue * tq, char *command)
 				 */
 
     args = parse_into_wordlist(command);
+    
+#ifdef SSH_FINGERPRINT
+    if(args.v.list[0].v.num > 1) {
+      Var v;
+      v.type = TYPE_STR;
+      v.v.str = str_dup(tq->fingerprint);
+      args = listappend(args,v);
+    }
+#endif
+
     run_server_task_setting_id(tq->player, tq->handler, "do_login_command",
 			       args, command, &result,
 			       &(tq->last_input_task_id));
@@ -792,17 +802,6 @@ do_login_task(tqueue * tq, char *command)
 	    dead_tq->player = NOTHING;	/* it'll be freed by run_ready_tasks */
 	    dead_tq->num_bg_tasks = 0;
 	}
-#ifdef SSH_FINGERPRINT
-        db_prop_handle prop = db_find_property(new_player,"fingerprint",0);
-        if(prop.ptr!=NULL) {
-          Var value;
-          value.type = TYPE_STR;
-          /* no need to add a reference here, since tq never frees fingerprint
-             and the value gets copied into the db anyway. */        
-          value.v.str = tq->fingerprint;
-          db_set_property_value(prop,value);
-        }
-#endif
 	player_connected(old_player, new_player, new_player > old_max_object);
     }
     free_var(result);

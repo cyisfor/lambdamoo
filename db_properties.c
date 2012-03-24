@@ -138,7 +138,7 @@ db_add_propdef(Objid oid, const char *pname, Var value, Objid owner,
 	int new_size = (o->propdefs.max_length == 0
 			? 8 : 2 * o->propdefs.max_length);
 
-	o->propdefs.l = myremalloc(o->propdefs.l,
+	o->propdefs.l = myrealloc(o->propdefs.l,
                                    new_size * sizeof(Propdef), 
                                    M_PROPDEF);
         /*
